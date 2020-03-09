@@ -1,15 +1,14 @@
 import React, {Component} from 'react';
 import {
-  Dimensions,
   StyleSheet,
   Text,
   View,
   StatusBar,
-  Alert,
   TouchableOpacity,
-  Image,
+  Button,
+  Alert
 } from 'react-native';
-import Constants from './Constants';
+import Constants from '../components/Constants';
 import {GameEngine} from 'react-native-game-engine';
 import Matter from 'matter-js';
 import Bird from './Bird';
@@ -17,12 +16,10 @@ import Player from './Player';
 import Opponent from './Opponent';
 import Physics from './Physics';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
-
-
+import * as Font from 'expo-font'
 
 
 export default class App extends Component {
-
   
   constructor(props) {
     super(props);
@@ -36,12 +33,15 @@ export default class App extends Component {
       oppo_name: '',
       play_name: '',
       scoreboard: false,
+      touch: false,
     };
-
     this.gameEngine = null;
     this.entities = this.setupWorld();
     }
 
+    loadFonts = () => {
+      Fonts();
+    }
    
   setupWorld = () => {
     let engine = Matter.Engine.create({enableSleeping: false});
@@ -58,7 +58,7 @@ export default class App extends Component {
 
     let player = Matter.Bodies.rectangle(
       Constants.MAX_WIDTH / 2,
-      Constants.MAX_HEIGHT + hp("46%"),
+      Constants.MAX_HEIGHT + 400,
       Constants.MAX_WIDTH,
       10,
       {isStatic: true},
@@ -66,26 +66,33 @@ export default class App extends Component {
 
     let opponent = Matter.Bodies.rectangle(
       Constants.MAX_WIDTH / 2,
-      Constants.MAX_HEIGHT - 1550,
+      Constants.MAX_HEIGHT - 1555,
       Constants.MAX_WIDTH,
       10,
       {isStatic: true},
     );
 
-    //needs attention
     Matter.World.add(world, [bird, opponent, player]);
     Matter.Events.on(engine, 'collisionStart', event => {
-      var pairs= event.pairs;
       console.log(bird.position)
+      var pairs= event.pairs;
       if (bird.position.y < Constants.MAX_HEIGHT / 2){
         this.gameEngine.dispatch({type: 'game-over'});
         world.gravity.y = 0.0;
       }else{
         this.gameEngine.dispatch({type: 'win'});
-              world.gravity.y = 0.0;
+        this.reset;
+        world.gravity.y = 0.0;
       }
     });
 
+    // Matter.World.add(world, [bird, player]);
+    // Matter.Events.on(engine, 'collisionStart2', event => {
+    //   var pairs2= event.pairs2;
+    //   this.gameEngine.dispatch({type: 'win'});
+    //   world.gravity.y = 0.0;
+    //   console.log(bird.position)
+    // });
 
     return {
       physics: {engine: engine, world: world},
@@ -100,6 +107,7 @@ export default class App extends Component {
   onEvent = e => {
     console.log(e.type)
     if (e.type === 'game-over') {
+      this.reset();
       this.setState({
         losing: true,
         winning: false,
@@ -107,7 +115,9 @@ export default class App extends Component {
         scoreboard: true,
         oppo_score: this.state.oppo_score + 1,
       });
+      this.reset;
     } else if (e.type === 'win') {
+      this.reset();
       this.setState({
         losing: false,
         winning: true,
@@ -115,6 +125,7 @@ export default class App extends Component {
         scoreboard: true,
         player_score: this.state.player_score + 1,
       });
+      this.reset;
     }
   };
 
@@ -130,12 +141,13 @@ export default class App extends Component {
 
   render() {
     return (
+      <View style={styles.container}>
       <View style={styles.floor_container}>
          <View style={styles.header_container}>
           <View style={styles.scores_left_container} />
           <Text style={styles.score_left}>{this.state.player_score}</Text>
           <Text style={styles.score_right}>{this.state.oppo_score}</Text>
-          <Text style={styles.timer}>90</Text>
+          <Text style={styles.timer}></Text>
           <View style={styles.timer_container} />
           <View style={styles.scores_right_container} />
           <View style={styles.score_background} />
@@ -157,23 +169,31 @@ export default class App extends Component {
           </GameEngine>
           {this.state.scoreboard && this.state.losing && (
             <TouchableOpacity
-              style={styles.fullScreenButton}
-              onPress={this.reset}>
+              style={styles.fullScreenButton}>
               <View style={styles.fullScreen}>
                 <Text style={styles.gameOverText}>GAME OVER</Text>
-                <Text style={styles.gameOverSubText}>Try Again</Text>
+                <TouchableOpacity style={styles.backButton}
+                onPress={() => this.props.navigation.navigate('HomePage')}>
+                <Text style={styles.gameOverSubText}>Tap Out</Text>
+                </TouchableOpacity>
+                <Text style={styles.TapOutText}
+                onPress={this.reset}>Rematch</Text>
               </View>
             </TouchableOpacity>
           )}
           {this.state.scoreboard && this.state.winning && (
-            <TouchableOpacity
-              style={styles.fullScreenButton}
-              onPress={this.reset}>
-              <View style={styles.fullScreen}>
-                <Text style={styles.gameOverText}>YOU WIN</Text>
-                <Text style={styles.gameOverSubText}>Try Again</Text>
-              </View>
-            </TouchableOpacity>
+         <TouchableOpacity
+         style={styles.fullScreenButton}>
+         <View style={styles.fullScreen}>
+           <Text style={styles.gameOverText}>YOU WIN</Text>
+           <TouchableOpacity style={styles.backButton}
+           onPress={() => this.props.navigation.navigate('HomePage')}>
+           <Text style={styles.gameOverSubText}>Tap Out</Text>
+           </TouchableOpacity>
+           <Text style={styles.TapOutText}
+            onPress={this.reset}>Challenge</Text>
+         </View>
+          </TouchableOpacity>
           )}
           {this.state.start && (
             <TouchableOpacity
@@ -196,11 +216,18 @@ export default class App extends Component {
         <View style={styles.team_container_bottom} />
         <Text style={styles.team_container_text_bot}>P1</Text>
       </View>
+      </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: 35,
+    backgroundColor: '#250A26',
+  },
+
   bird_spot: {
     position: 'relative',
     bottom: hp("44%"),
@@ -248,8 +275,8 @@ const styles = StyleSheet.create({
 
   team_container_text: {
     position: 'absolute',
-    top: hp(8),
-    left: wp(47),
+    top: hp("8%"),
+    left: wp("47%"),
     fontSize: 20,
     color: 'white',
     zIndex: 9999,
@@ -260,7 +287,7 @@ const styles = StyleSheet.create({
     position:'absolute',
     color: 'black',
     alignContent:'center',
-    top: hp(2),
+    top: hp("2%"),
     left: wp("30%"),
     fontSize: 23,
     textAlign: 'center',
@@ -318,14 +345,13 @@ const styles = StyleSheet.create({
   },
 
    floor_container: {
+    alignContent:'center',
     height: hp("93%"),
     paddingBottom: 100,
     backgroundColor: '#A83131',
     borderBottomRightRadius: 30,
     borderBottomLeftRadius: 30,
     overflow: 'hidden',
-
-    flexDirection:'column',
   },
 
   score_background: {
@@ -354,7 +380,7 @@ const styles = StyleSheet.create({
     position:"absolute",
     color: 'white',
     top: 5,
-    left:wp("6%"),
+    left:wp("5%"),
     fontSize: 44,
     textAlign: 'center',
     zIndex: 9999,
@@ -386,7 +412,7 @@ const styles = StyleSheet.create({
     position:'absolute',
     alignSelf:'center',
     top:hp("1%"),
-    right:hp("17.6%"),
+    right:hp("17.8%"),
     width: 100,
     height: 100,
     borderBottomRightRadius: 50,
@@ -461,13 +487,17 @@ const styles = StyleSheet.create({
     textShadowRadius: 2,
   },
 
- 
- 
-
-
-  
- 
-
+  TapOutText: {
+    color: 'white',
+    top: 0,
+    marginTop:200,
+    fontSize: 34,
+    zIndex: 99,
+    fontFamily: 'FiraSansExtraCondensed-Bold',
+    textShadowColor: 'black',
+    textShadowOffset: {width: 3, height: 3},
+    textShadowRadius: 2,
+  },
 
   team_container_text_bot: {
     position: 'absolute',
@@ -499,8 +529,6 @@ const styles = StyleSheet.create({
     shadowRadius: 7.1,
     elevation: 13,
   },
-
-  
 
 
 });

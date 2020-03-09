@@ -2,20 +2,19 @@ import React from 'react';
 import {View, StyleSheet} from 'react-native';
 import GameArea from './components/GameArea';
 import io from 'socket.io-client';
-import WaitRoom from './components/WaitRoom';
+import HomeScreen from  './screens/HomeScreen'
 
 function App (){
   return (
     <View style={styles.container}>
-      <WaitRoom />
+      <HomeScreen />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    paddingTop: 35,
+    flex: 10,
     backgroundColor: '#250A26',
   },
 });
