@@ -29,11 +29,11 @@ export default function SignInScreen({navigation}) {
       placeholder={password}
     />
      <TouchableOpacity style={styles.signInButton}
-              onPress={() => navigation.navigate('GameArea')}>
+              onPress={() => this.state.props.navigation.navigate('GameArea')}>
               <Text style={styles.signInButtonText}>SIGN IN</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.backButton}
-              onPress={() => navigation.navigate('HomePage')}>
+              onPress={() => this.state.props.navigation.navigate('HomePage')}>
               <Text style={styles.signInButtonText}>Back</Text>
       </TouchableOpacity>
     

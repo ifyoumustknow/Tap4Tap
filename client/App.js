@@ -1,22 +1,24 @@
-import React from 'react';
+import React, { Component, useState, useEffect} from "react";
 import {View, StyleSheet} from 'react-native';
+import { createStackNavigator } from 'react-navigation-stack';
+import { createAppContainer } from 'react-navigation';
+import HomeScreen from './screens/HomeScreen';
+import SignInScreen from './screens/SignInScreen';
 import GameArea from './components/GameArea';
-import io from 'socket.io-client';
-import HomeScreen from  './screens/HomeScreen'
 
-function App (){
-  return (
-    <View style={styles.container}>
-      <HomeScreen />
-    </View>
-  );
-};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 10,
-    backgroundColor: '#250A26',
+const navigator = createStackNavigator(
+  {
+    HomePage: HomeScreen,
+    SignIn: SignInScreen,
+    GameArea: GameArea
   },
-});
+  {
+    initialRouteName: 'SignIn',
+    defaultNavigationOptions: {
+      headerShown: false
+    }
+  }
+);
 
-export default App;
+const App = createAppContainer(navigator);
