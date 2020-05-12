@@ -1,4 +1,18 @@
 {
-  "name": "Tap4Tap",
-  "displayName": "Tap4Tap"
+  "expo": {
+    "name": "t4t",
+    "icon": "../client/components/assets/images/icons/t4t_96.png",
+    "version": "1.0.6",
+    "slug": "t4t-slug",
+    "sdkVersion": "36.0.0",
+    "ios": {
+      "bundleIdentifier": "com.robert.tap4tap",
+      "buildNumber": "1.0.5"
+    },
+    "android": {
+      "package": "com.robert.tap4tap",
+      "versionCode": 1
+    },
+    "description": "Tug-a-war game for friends and family"
+  }
 }

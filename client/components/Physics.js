@@ -8,7 +8,7 @@ const Physics = (entities, {touches, time}) => {
     .filter(t => t.type === 'press')
     .forEach(t => {
       Matter.Body.applyForce(bird, bird.position, {x: 0.0, y: 0.7});
-      engine.world.gravity.y = -0.5;
+      engine.world.gravity.y = 0.5;
     });
 
   Matter.Engine.update(engine, time.delta);

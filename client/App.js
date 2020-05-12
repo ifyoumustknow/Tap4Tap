@@ -11,14 +11,14 @@ const navigator = createStackNavigator(
   {
     HomePage: HomeScreen,
     SignIn: SignInScreen,
-    GameArea: GameArea
+    GameArea: GameArea,
   },
   {
     initialRouteName: 'SignIn',
     defaultNavigationOptions: {
-      headerShown: false
-    }
-  }
+      headerShown: false,
+    },
+  },
 );
 
 const App = createAppContainer(navigator);

@@ -76,7 +76,7 @@ export default class App extends Component {
     Matter.Events.on(engine, 'collisionStart', event => {
       console.log(bird.position)
       var pairs= event.pairs;
-      if (bird.position.y < Constants.MAX_HEIGHT / 2){
+      if (bird.position.y > Constants.MAX_HEIGHT / 2){
         this.gameEngine.dispatch({type: 'game-over'});
         world.gravity.y = 0.0;
       }else{
